@@ -1,6 +1,6 @@
 import streamlit as st
 from reader import read_cv
-from scorer import score_cv
+from ats_scoring import score_cv
 
 st.title("AI CV Screening Agent")
 
