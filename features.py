@@ -11,35 +11,19 @@ def extract_education(text):
     if "phd" in text or "doctorat" in text:
         return "Bac+8"
 
-    if (
-        "master" in text
-        or "bac+5" in text
-        or "5eme annee" in text
-        or "5ème année" in text
-        or "5eme année" in text
-        or "cinquieme annee" in text
-        or "cinquième année" in text
-    ):
+    if "master" in text or "bac+5" in text:
         return "Bac+5"
 
-    if (
-        "4eme annee" in text
-        or "4ème année" in text
-        or "quatrieme annee" in text
-        or "quatrième année" in text
-    ):
+    if "5eme" in text or "5ème" in text:
+        return "Bac+5"
+
+    if "4eme" in text or "4ème" in text:
         return "Bac+4"
 
-    if (
-        "licence" in text
-        or "bac+3" in text
-        or "3eme annee" in text
-        or "3ème année" in text
-        or "3eme année" in text
-        or "troisieme annee" in text
-        or "troisième année" in text
-        or "third year" in text
-    ):
+    if "licence" in text or "bac+3" in text:
+        return "Bac+3"
+
+    if "3eme" in text or "3ème" in text:
         return "Bac+3"
 
     if "bac+2" in text or "dut" in text or "bts" in text:
@@ -49,6 +33,7 @@ def extract_education(text):
         return "Bac"
 
     return "Unknown"
+
 
    
 
