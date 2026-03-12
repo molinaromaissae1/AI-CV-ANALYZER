@@ -1,4 +1,5 @@
 import streamlit as st
+
 from reader import extract_text_from_pdf
 from preprocess import preprocess_text
 
@@ -11,9 +12,6 @@ from features import (
     extract_companies
 )
 
-from ats_scoring import calculate_ats_score
-
-
 st.set_page_config(
     page_title="AI CV Analyzer",
     page_icon="🤖",
@@ -21,14 +19,12 @@ st.set_page_config(
 )
 
 st.title("🤖 AI CV Analyzer for HR")
-st.write("Upload a CV and the system will automatically analyze it.")
-
+st.write("Upload a CV and the system will analyze it automatically.")
 
 uploaded_file = st.file_uploader(
-    "📄 Upload CV (PDF format)",
+    "📄 Upload CV (PDF)",
     type=["pdf"]
 )
-
 
 if uploaded_file is not None:
 
@@ -36,21 +32,12 @@ if uploaded_file is not None:
 
     clean_text = preprocess_text(text)
 
-
     experience = extract_experience(clean_text)
     education = extract_education(clean_text)
     skills = extract_skills(clean_text)
     languages = extract_languages(clean_text)
     sector = extract_sector(clean_text)
     companies = extract_companies(clean_text)
-
-    score = calculate_ats_score(
-        experience,
-        skills,
-        languages,
-        education
-    )
-
 
     st.subheader("📊 Extracted Information")
 
@@ -64,18 +51,37 @@ if uploaded_file is not None:
         st.metric("Sector", sector)
         st.metric("Companies", companies)
 
-
     st.subheader("💼 Skills")
 
     for skill in skills:
         st.success(skill)
-
 
     st.subheader("🌍 Languages")
 
     for lang in languages:
         st.info(lang)
 
+    # -----------------
+    # ATS SCORE
+    # -----------------
+
+    score = 0
+
+    score += experience * 20
+    score += len(skills) * 5
+    score += len(languages) * 5
+
+    if education == "Bac+5":
+        score += 20
+    elif education == "Bac+3":
+        score += 15
+    elif education == "Bac+2":
+        score += 10
+    else:
+        score += 5
+
+    if score > 100:
+        score = 100
 
     st.subheader("📈 ATS Score")
 
@@ -83,7 +89,11 @@ if uploaded_file is not None:
 
     st.write("Score:", score)
 
-    if score > 60:
-        st.success("Candidate Selected")
+    if score > 70:
+        st.success("🟢 Good Candidate")
+
+    elif score >= 40:
+        st.warning("🟡 Average Candidate")
+
     else:
-        st.warning("Candidate Not Selected")
+        st.error("🔴 Weak Candidate")
