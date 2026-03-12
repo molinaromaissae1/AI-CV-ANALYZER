@@ -1,91 +1,90 @@
 import re
 
-# -----------------------------
+
+# -------------------------
 # EDUCATION LEVEL
-# -----------------------------
+# -------------------------
 def extract_education(text):
 
     text = text.lower()
 
-    if "bac+5" in text or "master" in text:
+    if "master" in text or "bac+5" in text:
         return "Bac+5"
 
-    if "bac+3" in text or "licence" in text or "3e année" in text or "3eme annee" in text:
+    if "licence" in text or "bachelor" in text or "bac+3" in text:
         return "Bac+3"
 
-    if "bac+2" in text or "dut" in text or "bts" in text:
+    if "3e année" in text or "3eme annee" in text or "3ème année" in text:
+        return "Bac+3"
+
+    if "bts" in text or "dut" in text or "bac+2" in text:
         return "Bac+2"
 
-    if "bac" in text or "baccalauréat" in text or "baccalaureat" in text:
+    if "baccalauréat" in text or "bac" in text:
         return "Bac"
 
     return "Unknown"
 
 
-# -----------------------------
-# EXPERIENCE (years)
-# -----------------------------
+# -------------------------
+# EXPERIENCE
+# -------------------------
 def extract_experience(text):
 
     years = re.findall(r"20\d{2}", text)
 
-    if len(years) >= 2:
-        first = int(years[0])
-        last = int(years[-1])
+    if len(years) < 2:
+        return 0
 
-        exp = last - first
+    first = int(years[0])
+    last = int(years[-1])
 
-        if exp < 0:
-            exp = 0
+    experience = last - first
 
-        return exp
+    if experience < 0:
+        experience = 0
 
-    return 0
+    if experience > 30:
+        experience = 30
+
+    return experience
 
 
-# -----------------------------
+# -------------------------
 # SKILLS
-# -----------------------------
+# -------------------------
 def extract_skills(text):
 
     text = text.lower()
 
-    skills_list = [
+    skills_db = [
 
-        # RH
         "ressources humaines",
-        "gestion administrative",
         "recrutement",
+        "gestion administrative",
         "gestion des dossiers",
         "saisie de données",
         "communication",
+        "organisation",
         "travail d'équipe",
-
-        # bureautique
         "excel",
         "word",
-        "powerpoint",
-
-        # soft skills
-        "organisation",
-        "analyse",
-        "gestion",
-        "leadership"
+        "powerpoint"
 
     ]
 
     found = []
 
-    for skill in skills_list:
+    for skill in skills_db:
         if skill in text:
             found.append(skill)
 
     return found
 
 
-# -----------------------------
+# -------------------------
 # LANGUAGES
-# -----------------------------
+# -------------------------
 def extract_languages(text):
 
     text = text.lower()
@@ -93,20 +92,20 @@ def extract_languages(text):
     languages = []
 
     if "français" in text or "francais" in text:
-        languages.append("français")
+        languages.append("Français")
 
     if "anglais" in text or "english" in text:
-        languages.append("anglais")
+        languages.append("Anglais")
 
     if "arabe" in text or "arabic" in text:
-        languages.append("arabe")
+        languages.append("Arabe")
 
     return languages
 
 
-# -----------------------------
+# -------------------------
 # SECTOR
-# -----------------------------
+# -------------------------
 def extract_sector(text):
 
     text = text.lower()
@@ -120,12 +119,15 @@ def extract_sector(text):
     if "finance" in text:
         return "Finance"
 
+    if "informatique" in text or "data" in text:
+        return "IT"
+
     return "General"
 
 
-# -----------------------------
+# -------------------------
 # NUMBER OF COMPANIES
-# -----------------------------
+# -------------------------
 def extract_companies(text):
 
     text = text.lower()
