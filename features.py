@@ -1,10 +1,8 @@
 import re
 
-
 def extract_experience(text):
 
     years = re.findall(r'20\d{2}', text)
-
     years = [int(y) for y in years]
 
     if len(years) < 2:
@@ -13,22 +11,20 @@ def extract_experience(text):
     return max(years) - min(years)
 
 
-
 def extract_education(text):
 
     text = text.lower()
 
-    if "master" in text or "bac+5" in text:
+    if "bac+5" in text or "master" in text:
         return "Bac+5"
 
-    if "licence" in text or "bac+3" in text:
+    if "bac+3" in text or "licence" in text:
         return "Bac+3"
 
-    if "baccalauréat" in text or "bac" in text:
+    if "bac" in text:
         return "Bac"
 
     return "Unknown"
-
 
 
 def extract_languages(text):
@@ -50,7 +46,6 @@ def extract_languages(text):
     return []
 
 
-
 def extract_skills(text):
 
     section = re.search(
@@ -70,29 +65,17 @@ def extract_skills(text):
     return []
 
 
+def extract_sector(text):
+
+    text = text.lower()
+
+    words = re.findall(r'[a-zéèêàç]{5,}', text)
+
+    return words[:3]
+
 
 def extract_companies(text):
 
     years = re.findall(r'20\d{2}', text)
 
     return max(0, len(years)//2)
-
-
-
-def extract_sector(text):
-
-    section = re.search(
-        r'expérience(.*?)(formation|langues)',
-        text.lower(),
-        re.DOTALL
-    )
-
-    if section:
-
-        content = section.group(1)
-
-        words = re.findall(r'[a-zéèêàç]{5,}', content)
-
-        return words[:3]
-
-    return []
