@@ -1,6 +1,6 @@
 import streamlit as st
 from reader import read_cv
-from ats_scoring import score_cv
+from features import extract_experience, extract_education, extract_skills, extract_languages
 
 st.title("AI CV Screening Agent")
 
@@ -13,14 +13,17 @@ if uploaded_file is not None:
     st.write(text)
     st.subheader("Extracted Information")
 
-    experience, education, skills, languages = score_cv(text)
+    experience = extract_experience(text)
+    education = extract_education(text)
+    skills = extract_skills(text)
+    languages = extract_languages(text)
 
     st.write("Experience:", experience)
     st.write("Education:", education)
     st.write("Skills:", skills)
     st.write("Languages:", languages)
 
-    score = experience*2 + education*2 + skills*3 + languages
+    score = experience*2 + len(skills)*3 + len(languages)
 
     st.subheader("ATS Score")
     st.write(score)
