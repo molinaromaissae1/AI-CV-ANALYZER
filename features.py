@@ -23,8 +23,10 @@ def extract_education(text):
     if "licence" in text or "bac+3" in text:
         return "Bac+3"
 
-    if "3eme" in text or "3ème" in text:
-        return "Bac+3"
+    import re
+
+if re.search(r"\b3\s*e?me\b", text):
+    return "Bac+3"
 
     if "bac+2" in text or "dut" in text or "bts" in text:
         return "Bac+2"
