@@ -1,14 +1,31 @@
 import re
 
+
 # -----------------------
 # EXPERIENCE
 # -----------------------
 
 def extract_experience(text):
 
-    years = re.findall(r'\b\d+\s*(ans|an)\b', text.lower())
+    text = text.lower()
 
-    return len(years)
+    experience = 0
+
+    # stage
+    if "stage" in text or "stagiaire" in text:
+        experience += 1
+
+    # travail
+    if "emploi" in text or "travail" in text or "poste" in text:
+        experience += 1
+
+    # dates
+    years = re.findall(r'20\d{2}', text)
+
+    if len(years) >= 2:
+        experience += 1
+
+    return experience
 
 
 # -----------------------
@@ -19,16 +36,16 @@ def extract_education(text):
 
     text = text.lower()
 
-    if "bac+5" in text:
+    if "bac+5" in text or "master" in text:
         return "Bac+5"
 
-    if "bac+3" in text:
+    if "bac+3" in text or "licence" in text or "3e année" in text:
         return "Bac+3"
 
-    if "bac+2" in text:
+    if "bac+2" in text or "bts" in text or "dut" in text or "2e année" in text:
         return "Bac+2"
 
-    if "bac" in text:
+    if "bac" in text or "baccalauréat" in text:
         return "Bac"
 
     return "Unknown"
@@ -48,7 +65,10 @@ def extract_languages(text):
         "anglais",
         "english",
         "arabe",
-        "arabic"
+        "arabic",
+        "espagnol",
+        "allemand",
+        "italien"
     ]
 
     found = []
@@ -61,7 +81,7 @@ def extract_languages(text):
 
 
 # -----------------------
-# SKILLS
+# SKILLS RH
 # -----------------------
 
 def extract_skills(text):
@@ -69,15 +89,38 @@ def extract_skills(text):
     text = text.lower()
 
     skills_list = [
-        "python",
-        "excel",
-        "power bi",
-        "sql",
-        "gestion",
-        "administrative",
-        "communication",
-        "analyse",
-        "data"
+
+    "ressources humaines",
+    "recrutement",
+    "gestion des talents",
+    "gestion des compétences",
+    "gestion du personnel",
+    "administration du personnel",
+
+    "entretiens",
+    "sélection des candidats",
+    "onboarding",
+
+    "gestion des dossiers",
+    "gestion administrative",
+    "saisie de données",
+
+    "paie",
+    "gestion de paie",
+
+    "formation",
+
+    "communication",
+    "travail d'équipe",
+    "leadership",
+
+    "organisation",
+    "planification",
+
+    "excel",
+    "word",
+    "powerpoint",
+    "outlook"
     ]
 
     found = []
@@ -97,22 +140,10 @@ def extract_sector(text):
 
     text = text.lower()
 
-    sectors = [
-        "informatique",
-        "data",
-        "finance",
-        "marketing",
-        "administration",
-        "industrie"
-    ]
+    if "ressources humaines" in text or "rh" in text:
+        return "Ressources Humaines"
 
-    found = []
-
-    for s in sectors:
-        if s in text:
-            found.append(s)
-
-    return found
+    return "Unknown"
 
 
 # -----------------------
