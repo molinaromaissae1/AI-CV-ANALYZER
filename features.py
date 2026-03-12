@@ -7,26 +7,27 @@ def extract_education(text):
 
     text = text.lower()
 
-    # master / bac+5
-    if "master" in text or "bac+5" in text:
+    if "phd" in text or "doctorat" in text:
+        return "Bac+8"
+
+    if "master" in text or "bac+5" in text or "5eme annee" in text or "5ème année" in text:
         return "Bac+5"
 
-    # licence / bac+3
-    if "licence" in text or "bac+3" in text:
+    if "4eme annee" in text or "4ème année" in text:
+        return "Bac+4"
+
+    if "licence" in text or "bac+3" in text or "3eme annee" in text or "3ème année" in text:
         return "Bac+3"
 
-    # étudiant année (important)
-    if "3e année" in text or "3ème année" in text or "3eme annee" in text:
-        return "Bac+3"
-
-    if "2e année" in text or "2ème année" in text or "2eme annee" in text:
+    if "bac+2" in text or "dut" in text or "bts" in text:
         return "Bac+2"
 
-    # bac
-    if "baccalauréat" in text or "bac" in text:
+    if "bac" in text:
         return "Bac"
 
     return "Unknown"
+
+   
 
 
 # -------------------------
