@@ -1,7 +1,5 @@
 import re
 
-
-# EDUCATION
 def extract_education(text):
 
     text = text.lower()
@@ -12,8 +10,12 @@ def extract_education(text):
     if "licence" in text or "bac+3" in text:
         return "Bac+3"
 
-    if "3e année" in text or "3eme annee" in text or "3ème année" in text:
+    # IMPORTANT
+    if "3e année" in text or "3eme année" in text or "3ème année" in text or "3eme annee" in text:
         return "Bac+3"
+
+    if "2e année" in text or "2eme année" in text:
+        return "Bac+2"
 
     if "bts" in text or "dut" in text or "bac+2" in text:
         return "Bac+2"
@@ -24,27 +26,21 @@ def extract_education(text):
     return "Unknown"
 
 
+   
+
+
+
+
 
 # EXPERIENCE
 def extract_experience(text):
 
     years = re.findall(r"20\d{2}", text)
 
-    if len(years) < 2:
-        return 0
+    if len(years) >= 1:
+        return 1
 
-    first = int(years[0])
-    last = int(years[-1])
-
-    exp = last - first
-
-    if exp == 0:
-        exp = 1
-
-    return exp
-
-
-
+    return 0
 # SKILLS
 def extract_skills(text):
 
