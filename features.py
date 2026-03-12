@@ -1,9 +1,6 @@
 import re
 
-
-# -----------------------
-# EXPERIENCE
-# -----------------------
+# ---------------- EXPERIENCE ----------------
 
 def extract_experience(text):
 
@@ -11,34 +8,28 @@ def extract_experience(text):
 
     experience = 0
 
-    # stage
     if "stage" in text or "stagiaire" in text:
         experience += 1
 
-    # chercher années
-    years = re.findall(r'20\d{2}', text)
-
-    if len(years) >= 2:
+    if "assistant" in text or "chargé" in text or "responsable" in text:
         experience += 1
 
     return experience
 
 
-# -----------------------
-# EDUCATION
-# -----------------------
+# ---------------- EDUCATION ----------------
 
 def extract_education(text):
 
     text = text.lower()
 
-    if "bac+5" in text or "master" in text:
+    if "master" in text or "bac+5" in text:
         return "Bac+5"
 
-    if "bac+3" in text or "licence" in text or "3e année" in text:
+    if "licence" in text or "bac+3" in text or "3e année" in text:
         return "Bac+3"
 
-    if "bac+2" in text or "bts" in text or "dut" in text or "2e année" in text:
+    if "bts" in text or "dut" in text or "bac+2" in text:
         return "Bac+2"
 
     if "bac" in text or "baccalauréat" in text:
@@ -47,9 +38,7 @@ def extract_education(text):
     return "Unknown"
 
 
-# -----------------------
-# LANGUAGES
-# -----------------------
+# ---------------- LANGUAGES ----------------
 
 def extract_languages(text):
 
@@ -73,9 +62,7 @@ def extract_languages(text):
     return found
 
 
-# -----------------------
-# SKILLS (RH)
-# -----------------------
+# ---------------- SKILLS RH ----------------
 
 def extract_skills(text):
 
@@ -83,30 +70,27 @@ def extract_skills(text):
 
     skills_list = [
 
-    # RH
-    "ressources humaines",
-    "recrutement",
-    "gestion du personnel",
-    "administration du personnel",
-    "gestion des talents",
+        # RH
+        "ressources humaines",
+        "recrutement",
+        "gestion du personnel",
+        "administration du personnel",
 
-    # administratif
-    "gestion administrative",
-    "gestion des dossiers",
-    "saisie de données",
+        # administratif
+        "gestion administrative",
+        "gestion des dossiers",
+        "saisie de données",
 
-    # soft skills
-    "communication",
-    "travail d'équipe",
-    "leadership",
-    "organisation",
+        # soft skills
+        "communication",
+        "travail d'équipe",
+        "organisation",
 
-    # bureautique
-    "excel",
-    "word",
-    "powerpoint",
-    "power point",
-    "outlook"
+        # bureautique
+        "excel",
+        "word",
+        "powerpoint",
+        "outlook"
     ]
 
     found = []
@@ -118,29 +102,30 @@ def extract_skills(text):
     return found
 
 
-# -----------------------
-# SECTOR
-# -----------------------
+# ---------------- SECTOR ----------------
 
 def extract_sector(text):
 
     text = text.lower()
 
-    if "ressources humaines" in text or "rh" in text:
-        return "Ressources Humaines"
+    rh_keywords = [
+        "ressources humaines",
+        "rh",
+        "recrutement",
+        "gestion du personnel"
+    ]
 
-    if "gestion" in text:
-        return "Gestion / Administration"
+    for word in rh_keywords:
+        if word in text:
+            return "Ressources Humaines"
 
-    return "Unknown"
+    return "Other"
 
 
-# -----------------------
-# COMPANIES
-# -----------------------
+# ---------------- COMPANIES ----------------
 
 def extract_companies(text):
 
-    years = re.findall(r'20\d{2}', text)
+    companies = re.findall(r'\b(?:sarl|sa|sas|entreprise|groupe)\b', text.lower())
 
-    return max(0, len(years)//2)
+    return len(companies)
