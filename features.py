@@ -1,59 +1,70 @@
 import re
 
-def extract_features(text):
 
-    features = {}
+def extract_experience(text):
 
-    exp = re.findall(r"\d+ years", text)
+    years = re.findall(r'20\d{2}', text)
 
-    if exp:
-        features["experience"] = int(exp[0].split()[0])
-    else:
-        features["experience"] = 0
+    years = [int(y) for y in years]
 
-    if "phd" in text:
-        features["education"] = "phd"
+    if len(years) < 2:
+        return 0
 
-    elif "master" in text or "bac+5" in text:
-        features["education"] = "master"
+    return max(years) - min(years)
 
-    elif "bachelor" in text or "bac+3" in text:
-        features["education"] = "bachelor"
 
-    else:
-        features["education"] = "unknown"
 
-    skills = [
-        "python",
-        "machine learning",
-        "data analysis",
-        "excel",
-        "sql",
-        "project management"
-    ]
+def extract_education(text):
 
-    found = []
+    text = text.lower()
 
-    for s in skills:
+    if "master" in text:
+        return "Bac+5"
 
-        if s in text:
-            found.append(s)
+    if "licence" in text:
+        return "Bac+3"
 
-    features["skills"] = found
+    if "baccalauréat" in text:
+        return "Bac"
 
-    languages = []
+    return "Unknown"
 
-    if "english" in text:
-        languages.append("English")
 
-    if "french" in text:
-        languages.append("French")
 
-    if "arabic" in text:
-        languages.append("Arabic")
+def extract_languages(text):
 
-    features["languages"] = languages
+    section = re.search(
+        r'langues(.*?)(compétences|skills|expérience|formation)',
+        text.lower(),
+        re.DOTALL
+    )
 
-    features["companies"] = text.count("company")
+    if section:
 
-    return features
+        content = section.group(1)
+
+        languages = re.findall(r'[a-zéèêàç]+', content)
+
+        return languages
+
+    return []
+
+
+
+def extract_skills(text):
+
+    section = re.search(
+        r'(compétences|skills)(.*?)(expérience|formation|langues)',
+        text.lower(),
+        re.DOTALL
+    )
+
+    if section:
+
+        content = section.group(2)
+
+        skills = re.findall(r'[a-zéèêàç]+', content)
+
+        return skills
+
+    return []
