@@ -30,7 +30,18 @@ if "bac" in text:
     return "Bac"
 
 return "Unknown"
-   
+ if "bac" in text:
+    return "Bac"
+
+return "Unknown"
+
+
+def extract_experience(text):
+    return 0
+
+
+def extract_skills(text):
+    return []  
         
 
    
