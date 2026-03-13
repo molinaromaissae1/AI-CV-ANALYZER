@@ -1,26 +1,29 @@
 import re
 
-# =========================
+# ==========================
 # EDUCATION LEVEL
-# =========================
+# ==========================
 
 def extract_education(text):
-
     text = text.lower()
 
     if "phd" in text or "doctorat" in text:
         return "Bac+8"
 
-    if "master" in text or "bac+5" in text:
-        return "Bac+5"
-
-    if "5eme" in text or "5ème" in text:
+    if "master" in text or "bac+5" in text or "5eme" in text or "5ème" in text:
         return "Bac+5"
 
     if "4eme" in text or "4ème" in text:
         return "Bac+4"
 
-    if "licence" in text or "bac+3" in text or "3eme" in text or "3ème" in text:
+    if (
+        "licence" in text
+        or "bac+3" in text
+        or "3eme" in text
+        or "3ème" in text
+        or "3eme annee" in text
+        or "3ème année" in text
+    ):
         return "Bac+3"
 
     if "bac+2" in text or "dut" in text or "bts" in text:
@@ -32,39 +35,24 @@ def extract_education(text):
     return "Unknown"
 
 
-def extract_experience(text):
-    return 0
-
-
-def extract_skills(text):
-    return []  
-        
-
-   
-
-
-   
-
-
-# -------------------------
+# ==========================
 # EXPERIENCE
-# -------------------------
-def extract_experience(text):
+# ==========================
 
+def extract_experience(text):
     text = text.lower()
 
-    # stage ou expérience
     if "stage" in text or "expérience" in text or "experience" in text:
         return 1
 
     return 0
 
 
-# -------------------------
+# ==========================
 # SKILLS
-# -------------------------
-def extract_skills(text):
+# ==========================
 
+def extract_skills(text):
     text = text.lower()
 
     skills_list = [
@@ -89,11 +77,11 @@ def extract_skills(text):
     return found
 
 
-# -------------------------
+# ==========================
 # LANGUAGES
-# -------------------------
-def extract_languages(text):
+# ==========================
 
+def extract_languages(text):
     text = text.lower()
 
     languages = []
@@ -101,20 +89,20 @@ def extract_languages(text):
     if "français" in text or "francais" in text:
         languages.append("Français")
 
-    if "anglais" in text:
+    if "anglais" in text or "english" in text:
         languages.append("Anglais")
 
-    if "arabe" in text:
+    if "arabe" in text or "arabic" in text:
         languages.append("Arabe")
 
     return languages
 
 
-# -------------------------
+# ==========================
 # SECTOR
-# -------------------------
-def extract_sector(text):
+# ==========================
 
+def extract_sector(text):
     text = text.lower()
 
     if "ressources humaines" in text or "rh" in text:
@@ -123,11 +111,11 @@ def extract_sector(text):
     return "General"
 
 
-# -------------------------
+# ==========================
 # COMPANIES
-# -------------------------
-def extract_companies(text):
+# ==========================
 
+def extract_companies(text):
     text = text.lower()
 
     keywords = [
@@ -147,7 +135,6 @@ def extract_companies(text):
     for word in keywords:
         if word in text:
             count += 1
-
 
     if count > 1:
         count = 1
