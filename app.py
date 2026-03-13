@@ -89,7 +89,7 @@ if uploaded_file is not None:
 
     if score > 70:
         st.success("🟢 Good Candidate")
-
+# update
     elif score >= 40:
         st.warning("🟡 Average Candidate")
 
