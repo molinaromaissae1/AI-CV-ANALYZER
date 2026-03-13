@@ -43,7 +43,7 @@ languages = extract_languages(clean_text)
 sector = extract_sector(clean_text)
 companies = extract_companies(clean_text)
 
-    st.subheader("📊 Extracted Information")
+st.subheader("📊 Extracted Information")
 
     col1, col2 = st.columns(2)
 
