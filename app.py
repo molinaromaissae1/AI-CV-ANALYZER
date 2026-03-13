@@ -1,5 +1,6 @@
 import streamlit as st
-
+from reader import extract_text_from_pdf
+from preprocess import preprocess_text
 from features import (
     extract_education,
     extract_experience,
