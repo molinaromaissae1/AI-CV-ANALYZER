@@ -6,7 +6,8 @@ from features import (
     extract_experience,
     extract_skills,
     extract_languages,
-    extract_companies
+    extract_companies,
+    extract_sector
 )
 
 st.set_page_config(
