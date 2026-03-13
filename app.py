@@ -2,14 +2,14 @@ import streamlit as st
 from reader import extract_text_from_pdf
 from preprocess import preprocess_text
 from features import (
-    extract_education,
-    extract_experience,
+    
+    
     extract_skills,
     extract_languages,
     extract_companies,
     extract_sector
 )
-
+from education_experience import extract_education, extract_experience
 st.set_page_config(
     page_title="AI CV Analyzer",
     page_icon="🤖",
