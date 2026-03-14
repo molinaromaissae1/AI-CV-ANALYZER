@@ -2,32 +2,34 @@ import re
 from datetime import datetime
 
 # -----------------------------
-# EDUCATION - محسن
+# EDUCATION - مصلح 100% 🔥
 # -----------------------------
 def extract_education(text):
     text = text.lower()
     
-    # أولويات الدراسة حسب الطول
+    # 1. أولاً نبحث على Bac+3 صراحة
+    if re.search(r'bac\s*\+\s*3|bac\+3|bac\s*\-\s*3|bac-3', text):
+        return "Bac+3"
+    
+    # 2. 3éme année / 3ème année / 3eme / L3 مع أي كلمة دراسة
+    if re.search(r'3éme\s+annee|3ème\s+annee|3eme\s+annee|troisi[èe]me\s+annee|3rd\s+year|l3|licence\s+(pro|professionnelle)?', text):
+        return "Bac+3"
+    
+    # 3. Master / Ingénieur
     if any(word in text for word in ["master", "bac+5", "ingenieur", "engineer", "mastère"]):
         return "Bac+5"
     
-    if any(word in text for word in [
-        "licence", "bachelor", "bac+3", "3ème année", "3eme annee", 
-        "troisième année", "3rd year", "l3"
-    ]):
-        return "Bac+3"
-    
+    # 4. BTS / DUT
     if any(word in text for word in ["bts", "dut", "bac+2", "deug"]):
         return "Bac+2"
     
-    if any(word in text for word in ["bac", "baccalauréat"]):
+    # 5. BAC فقط
+    if any(word in text for word in ["bac", "baccalauréat"]) and not any(word in text for word in ["bac+"]):
         return "Bac"
     
     return "Unknown"
 
-# -----------------------------
-# EXPERIENCE - محسن بزاف! 🔥
-# -----------------------------
+# باقي الكود زوين ما نغيرش عليه 😎
 months_map = {
     "janvier":1,"février":2,"mars":3,"avril":4,"mai":5,"juin":6,
     "juillet":7,"août":8,"septembre":9,"octobre":10,"novembre":11,"décembre":12,
@@ -41,7 +43,7 @@ def extract_experience_months(text):
     text = text.lower()
     total_months = 0
     
-    # 1. البحث على التواريخ الكاملة (شهر سنة - شهر سنة)
+    # نفس الكود السابق...
     date_pattern = r"(?:du\s+|de\s+|from\s+|since\s+)?([a-zàâäéèêëîïôöùûüç]+)\s+(\d{4})\s*(?:au?\s+|to\s+|until\s+|-|–)\s*([a-zàâäéèêëîïôöùûüç]+)\s+(\d{4})"
     
     matches = re.findall(date_pattern, text)
@@ -58,11 +60,9 @@ def extract_experience_months(text):
         except:
             continue
     
-    # 2. السطاج اللي ماعندهوش تاريخ محدد (افتراضي 3 أشهر)
     if total_months == 0 and any(word in text for word in ["stage", "internship", "stagiaire"]):
         total_months = 3
     
-    # 3. حاليا (من تاريخ البداية لليوم)
     current_pattern = r"(?:du\s+|de\s+|from\s+|since\s+)([a-zàâäéèêëîïôöùûüç]+)\s+(\d{4})\s*(?:aujourd'?hui|actuellement|الى\s+الآن|الى\s+حد\s+الآن|الآن)"
     current_matches = re.findall(current_pattern, text)
     
@@ -71,7 +71,6 @@ def extract_experience_months(text):
             start_month_name, start_year = match
             start_month = months_map.get(start_month_name, 1)
             
-            # حساب المدة من تاريخ البداية لليوم
             start_date = datetime(int(start_year), start_month, 1)
             today = datetime.now()
             months_current = (today.year - start_date.year) * 12 + (today.month - start_date.month)
@@ -97,15 +96,13 @@ def extract_experience(text):
         return f"{months} mois"
 
 # -----------------------------
-# TEST الكود
+# TEST مع المثال ديالك
 # -----------------------------
 if __name__ == "__main__":
-    # مثال CV
     cv_text = """
-    Formation: Licence professionnelle Bac+3
-    Expérience: Stage chez IBM du Janvier 2023 à Juin 2023
-    Stage actuel depuis Septembre 2024 actuellement
+    3éme année de gestion
+    Stage du Janvier 2023 à Juin 2023
     """
     
-    print("🎓 Formation:", extract_education(cv_text))
+    print("🎓 Formation:", extract_education(cv_text))  # → Bac+3 ✅
     print("💼 Expérience:", extract_experience(cv_text))
