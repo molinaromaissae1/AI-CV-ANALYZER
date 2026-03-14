@@ -22,8 +22,7 @@ def extract_education(text):
 
     return "Unknown"
 
-    import re
-from datetime import datetime
+   
 
 def extract_experience_months(text):
 
