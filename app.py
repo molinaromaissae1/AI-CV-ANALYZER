@@ -31,8 +31,7 @@ if uploaded_file is not None:
     text = extract_text_from_pdf(uploaded_file)
 
     clean_text = preprocess_text(text)
-    st.subheader("DEBUG TEXT")
-    st.write(clean_text[:1500])
+    
     
     experience_months = extract_experience_months(clean_text)
 
