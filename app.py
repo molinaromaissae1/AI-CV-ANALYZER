@@ -34,34 +34,34 @@ def extract_experience_months(text):
     return 0
 if uploaded_file is not None:
 
-text = extract_text_from_pdf(uploaded_file)
+    text = extract_text_from_pdf(uploaded_file)
 
-clean_text = preprocess_text(text)
+    clean_text = preprocess_text(text)
 
-experience = extract_experience(clean_text)
-experience_months = extract_experience_months(clean_text)
+    experience = extract_experience(clean_text)
+    experience_months = extract_experience_months(clean_text)
 
-education = extract_education(clean_text)
-skills = extract_skills(clean_text)
-languages = extract_languages(clean_text)
-sector = extract_sector(clean_text)
-companies = extract_companies(clean_text)
+    education = extract_education(clean_text)
+    skills = extract_skills(clean_text)
+    languages = extract_languages(clean_text)
+    sector = extract_sector(clean_text)
+    companies = extract_companies(clean_text)
 
-st.subheader("📊 Extracted Information")
+    st.subheader("📊 Extracted Information")
 
-col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
 
-with col1:
+    with col1:
         st.metric("Experience Duration", experience)
         st.metric("Education Level", education)
 
-with col2:
+    with col2:
         st.metric("Sector", sector)
         st.metric("Companies", companies)
 
-st.subheader("💼 Skills")
+    st.subheader("💼 Skills")
 
-for skill in skills:
+    for skill in skills:
     st.success(skill)
 
 st.subheader("🌍 Languages")
