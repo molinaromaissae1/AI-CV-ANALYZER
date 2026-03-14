@@ -2,34 +2,46 @@ import re
 from datetime import datetime
 
 # -----------------------------
-# EDUCATION - مصلح 100% 🔥
+# EDUCATION - نهائي ومضمون 100%
 # -----------------------------
 def extract_education(text):
     text = text.lower()
     
-    # 1. أولاً نبحث على Bac+3 صراحة
-    if re.search(r'bac\s*\+\s*3|bac\+3|bac\s*\-\s*3|bac-3', text):
-        return "Bac+3"
+    # 🎯 Bac+3 أول حاجة
+    bac3_patterns = [
+        r'3éme\s+annee',
+        r'3ème\s+annee',
+        r'3eme\s+annee',
+        r'troisi[èe]me\s+annee',
+        r'3rd\s+year',
+        r'l3',
+        r'licence\s+(pro|professionnelle)?',
+        r'licence\s+gestion',
+        r'bac\s*\+\s*3',
+        r'bac\+3'
+    ]
     
-    # 2. 3éme année / 3ème année / 3eme / L3 مع أي كلمة دراسة
-    if re.search(r'3éme\s+annee|3ème\s+annee|3eme\s+annee|troisi[èe]me\s+annee|3rd\s+year|l3|licence\s+(pro|professionnelle)?', text):
-        return "Bac+3"
+    for pattern in bac3_patterns:
+        if re.search(pattern, text):
+            return "Bac+3"
     
-    # 3. Master / Ingénieur
+    # 🎯 Bac+5
     if any(word in text for word in ["master", "bac+5", "ingenieur", "engineer", "mastère"]):
         return "Bac+5"
     
-    # 4. BTS / DUT
+    # 🎯 Bac+2
     if any(word in text for word in ["bts", "dut", "bac+2", "deug"]):
         return "Bac+2"
     
-    # 5. BAC فقط
-    if any(word in text for word in ["bac", "baccalauréat"]) and not any(word in text for word in ["bac+"]):
+    # 🎯 BAC فقط
+    if re.search(r'\bbac\b|\bbaccalaureat\b', text) and not re.search(r'bac\s*\+\s*\d+|bac\s*\-\s*\d+', text):
         return "Bac"
     
     return "Unknown"
 
-# باقي الكود زوين ما نغيرش عليه 😎
+# -----------------------------
+# EXPERIENCE مع السطاج الحالي
+# -----------------------------
 months_map = {
     "janvier":1,"février":2,"mars":3,"avril":4,"mai":5,"juin":6,
     "juillet":7,"août":8,"septembre":9,"octobre":10,"novembre":11,"décembre":12,
@@ -43,9 +55,8 @@ def extract_experience_months(text):
     text = text.lower()
     total_months = 0
     
-    # نفس الكود السابق...
+    # 1. تواريخ كاملة (من - الى)
     date_pattern = r"(?:du\s+|de\s+|from\s+|since\s+)?([a-zàâäéèêëîïôöùûüç]+)\s+(\d{4})\s*(?:au?\s+|to\s+|until\s+|-|–)\s*([a-zàâäéèêëîïôöùûüç]+)\s+(\d{4})"
-    
     matches = re.findall(date_pattern, text)
     
     for match in matches:
@@ -60,10 +71,12 @@ def extract_experience_months(text):
         except:
             continue
     
+    # 2. السطاج بدون تاريخ (افتراضي 3 أشهر)
     if total_months == 0 and any(word in text for word in ["stage", "internship", "stagiaire"]):
         total_months = 3
     
-    current_pattern = r"(?:du\s+|de\s+|from\s+|since\s+)([a-zàâäéèêëîïôöùûüç]+)\s+(\d{4})\s*(?:aujourd'?hui|actuellement|الى\s+الآن|الى\s+حد\s+الآن|الآن)"
+    # 3. السطاج الحالي (من تاريخ البداية لليوم)
+    current_pattern = r"(?:du\s+|de\s+|from\s+|since\s+)([a-zàâäéèêëîïôöùûüç]+)\s+(\d{4})\s*(?:aujourd'?hui|actuellement|الى\s+الآن|الى\s+حد\s+الآن|الآن|حاليا)"
     current_matches = re.findall(current_pattern, text)
     
     for match in current_matches:
@@ -96,13 +109,22 @@ def extract_experience(text):
         return f"{months} mois"
 
 # -----------------------------
-# TEST مع المثال ديالك
+# استخدام الكود
 # -----------------------------
+def analyze_cv(cv_text):
+    return {
+        "formation": extract_education(cv_text),
+        "experience": extract_experience(cv_text)
+    }
+
+# مثال الاستخدام
 if __name__ == "__main__":
-    cv_text = """
+    cv = """
     3éme année de gestion
-    Stage du Janvier 2023 à Juin 2023
+    Stage chez OCP du Septembre 2024 actuellement
+    Stage IBM du Janvier 2023 à Juin 2023
     """
     
-    print("🎓 Formation:", extract_education(cv_text))  # → Bac+3 ✅
-    print("💼 Expérience:", extract_experience(cv_text))
+    result = analyze_cv(cv)
+    print("🎓 Formation:", result["formation"])
+    print("💼 Expérience:", result["experience"])
