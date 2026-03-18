@@ -80,19 +80,18 @@ def extract_skills(text):
 # ==========================
 
 def extract_languages(text):
+    languages = []
 
     text = text.lower()
 
-    languages = []
+    if "english" in text or "anglais" in text:
+        languages.append("English")
 
-    if "français" in text or "francais" in text:
-        languages.append("Français")
+    if "french" in text or "français" in text:
+        languages.append("French")
 
-    if "anglais" in text or "english" in text:
-        languages.append("Anglais")
-
-    if "arabe" in text or "arabic" in text:
-        languages.append("Arabe")
+    if "arabic" in text or "arabe" in text:
+        languages.append("Arabic")
 
     return languages
 
