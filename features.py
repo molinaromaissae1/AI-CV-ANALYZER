@@ -20,23 +20,44 @@ def extract_skills(text):
 
 
 # -------------------------
-# LANGUAGES
+# LANGUAGES + LEVEL
 # -------------------------
 def extract_languages(text):
     text = text.lower()
+
     languages = []
 
-    if "anglais" in text or "english" in text:
-        languages.append("English")
+    patterns = {
+        "English": r"(english|anglais)[\s:,-]*(a1|a2|b1|b2|c1|c2|courant|fluent|native)?",
+        "French": r"(french|français)[\s:,-]*(a1|a2|b1|b2|c1|c2|courant|fluent|native)?",
+        "Arabic": r"(arabic|arabe)[\s:,-]*(a1|a2|b1|b2|c1|c2|courant|fluent|native)?",
+        "Spanish": r"(spanish|espagnol)[\s:,-]*(a1|a2|b1|b2|c1|c2|courant|fluent|native)?"
+    }
 
-    if "français" in text or "french" in text:
-        languages.append("French")
+    level_mapping = {
+        "a1": "A1", "a2": "A2",
+        "b1": "B1", "b2": "B2",
+        "c1": "C1", "c2": "C2",
+        "courant": "C1",
+        "fluent": "C1",
+        "native": "C2"
+    }
 
-    if "arabe" in text or "arabic" in text:
-        languages.append("Arabic")
+    for lang, pattern in patterns.items():
+        matches = re.findall(pattern, text)
 
-    if "espagnol" in text or "spanish" in text:
-        languages.append("Spanish")
+        for match in matches:
+            level = match[1]
+
+            if level in level_mapping:
+                level = level_mapping[level]
+            else:
+                level = "B1"
+
+            languages.append({
+                "name": lang,
+                "level": level
+            })
 
     return languages
 
