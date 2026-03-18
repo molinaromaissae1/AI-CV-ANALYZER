@@ -1,15 +1,10 @@
 import streamlit as st
 import pandas as pd
 
-# -------------------------
-# IMPORTS
-# -------------------------
 from reader import extract_text_from_pdf
 from preprocess import preprocess_text
 
 from features import extract_skills, extract_languages, extract_companies, extract_sector
-
-
 from education_experience import extract_education, extract_experience_months
 from ats_scoring import calculate_global_score
 
@@ -17,50 +12,33 @@ from ats_scoring import calculate_global_score
 # -------------------------
 # CONFIG
 # -------------------------
-st.set_page_config(
-    page_title="AI CV Analyzer",
-    page_icon="🤖",
-    layout="wide"
-)
+st.set_page_config(page_title="AI CV Analyzer", page_icon="🤖", layout="wide")
 
 st.title("🤖 AI CV Analyzer for HR")
 st.write("Upload CVs and match them with a job (fiche de poste)")
 
 
 # -------------------------
-# FICHE DE POSTE
+# JOB INPUT
 # -------------------------
 st.sidebar.title("🎯 Fiche de poste")
 
-job_skills = st.sidebar.text_area(
-    "Required Skills",
-    "recruitment, communication, HR"
-)
+job_skills = st.sidebar.text_area("Required Skills", "recruitment, communication, HR")
 
 job_education = st.sidebar.selectbox(
     "Required Education",
     ["Bac", "Bac+1", "Bac+2", "Bac+3", "Bac+5", "Doctorat"]
 )
 
-job_experience = st.sidebar.slider(
-    "Minimum Experience (months)",
-    0, 60, 12
-)
+job_experience = st.sidebar.slider("Minimum Experience (months)", 0, 60, 12)
 
-job_language = st.sidebar.selectbox(
-    "Language Level",
-    ["A1", "A2", "B1", "B2", "C1", "C2"]
-)
+job_language = st.sidebar.selectbox("Language Level", ["A1","A2","B1","B2","C1","C2"])
 
 
 # -------------------------
 # UPLOAD
 # -------------------------
-uploaded_files = st.file_uploader(
-    "📄 Upload CVs (PDF)",
-    type=["pdf"],
-    accept_multiple_files=True
-)
+uploaded_files = st.file_uploader("📄 Upload CVs (PDF)", type=["pdf"], accept_multiple_files=True)
 
 
 # -------------------------
@@ -74,11 +52,10 @@ if uploaded_files:
 
     for file in uploaded_files:
 
-        # 1. Extract text
         text = extract_text_from_pdf(file)
         clean_text = preprocess_text(text)
 
-        # 2. Extract features
+        # Features
         experience_months = extract_experience_months(clean_text)
         education = extract_education(clean_text)
         skills = extract_skills(clean_text)
@@ -86,7 +63,7 @@ if uploaded_files:
         sector = extract_sector(clean_text)
         companies = extract_companies(clean_text)
 
-        # 3. Global score
+        # Global score
         data = {
             "skills": skills,
             "languages": languages,
@@ -97,163 +74,74 @@ if uploaded_files:
         score = calculate_global_score(data)
 
         # -------------------------
-        # MATCHING SMART
+        # MATCHING
         # -------------------------
         matching_score = 0
 
-        # SKILLS
         matched_skills = set(skills).intersection(job_skills_list)
         matching_score += len(matched_skills) * 5
 
-        if len(matched_skills) >= len(job_skills_list) / 2:
-            matching_score += 10
-
         # EDUCATION
-        education_levels = {
-            "Bac": 1,
-            "Bac+1": 2,
-            "Bac+2": 3,
-            "Bac+3": 4,
-            "Bac+5": 5,
-            "Doctorat": 6
-        }
-
-        candidate_level = education_levels.get(education, 0)
-        required_level = education_levels.get(job_education, 0)
-
-        if candidate_level >= required_level:
+        education_levels = {"Bac":1,"Bac+1":2,"Bac+2":3,"Bac+3":4,"Bac+5":5,"Doctorat":6}
+        if education_levels.get(education,0) >= education_levels.get(job_education,0):
             matching_score += 20
-        elif candidate_level == required_level - 1:
-            matching_score += 10
 
         # EXPERIENCE
         if experience_months >= job_experience:
             matching_score += 20
-        elif experience_months >= job_experience / 2:
-            matching_score += 10
 
-        # LANGUAGE (🔥 updated)
-        language_levels = {
-            "A1": 1, "A2": 2,
-            "B1": 3, "B2": 4,
-            "C1": 5, "C2": 6
-        }
-
+        # LANGUAGE
+        language_levels = {"A1":1,"A2":2,"B1":3,"B2":4,"C1":5,"C2":6}
         candidate_lang_level = 0
 
         for lang in languages:
-            lvl = language_levels.get(str(lang["level"]).upper(), 0)
+            lvl = language_levels.get(lang["level"],0)
             if lvl > candidate_lang_level:
                 candidate_lang_level = lvl
 
-        required_lang_level = language_levels.get(job_language, 0)
-
-        if candidate_lang_level >= required_lang_level:
+        if candidate_lang_level >= language_levels.get(job_language,0):
             matching_score += 20
-        elif candidate_lang_level == required_lang_level - 1:
-            matching_score += 10
 
-        # -------------------------
         # STATUS
-        # -------------------------
-        if matching_score >= 60:
-            status = "🟢 Good"
-        elif matching_score >= 30:
-            status = "🟡 Average"
-        else:
-            status = "🔴 Weak"
+        status = "🟢 Good" if matching_score >= 60 else "🟡 Average" if matching_score >= 30 else "🔴 Weak"
 
-        # -------------------------
-        # SAVE RESULT (🔥 updated)
-        # -------------------------
+        # SAVE
         results.append({
             "CV": file.name,
-            "Score": score,
             "Matching Score": matching_score,
-            "Status": status,
             "Education": education,
             "Experience (months)": experience_months,
-            "Skills": len(skills),
-            "Matched Skills": ", ".join(matched_skills) if matched_skills else "None",
-            "Languages": ", ".join([f"{l['language']}({l['level']})" for l in languages]) if languages else "None",
+            "Skills": ", ".join(skills),
+            "Matched Skills": ", ".join(matched_skills),
+            "Languages": ", ".join([f"{l['name']} ({l['level']})" for l in languages]),
             "Companies": len(companies),
-            "Sector": sector
+            "Sector": sector,
+            "Status": status
         })
 
-    # -------------------------
-    # TABLE
-    # -------------------------
-    df = pd.DataFrame(results)
-    df = df.sort_values(by="Matching Score", ascending=False)
-
-    def color_status(val):
-        if "Good" in val:
-            return "background-color: lightgreen"
-        elif "Average" in val:
-            return "background-color: khaki"
-        else:
-            return "background-color: lightcoral"
-
-    styled_df = df.style.applymap(color_status, subset=["Status"])
+    df = pd.DataFrame(results).sort_values(by="Matching Score", ascending=False)
 
     st.subheader("📊 Candidates Ranking")
-    st.dataframe(styled_df, use_container_width=True)
+    st.dataframe(df, use_container_width=True)
 
-    # -------------------------
-    # GRAPH 📈
-    # -------------------------
     st.subheader("📈 Matching Score Chart")
     st.bar_chart(df.set_index("CV")["Matching Score"])
 
-    # -------------------------
-    # DOWNLOAD CSV 📥
-    # -------------------------
     csv = df.to_csv(index=False).encode('utf-8')
+    st.download_button("📥 Download Results (CSV)", csv, "candidates.csv", "text/csv")
 
-    st.download_button(
-        "📥 Download Results (CSV)",
-        csv,
-        "candidates.csv",
-        "text/csv"
-    )
-
-    # -------------------------
-    # BEST CANDIDATE
-    # -------------------------
     best = df.iloc[0]
 
     st.subheader("🏆 Best Candidate")
+    st.success(f"{best['CV']} - Score: {best['Matching Score']}")
 
-    if best["Matching Score"] >= 60:
-        st.success(f"{best['CV']} - Excellent Match ({best['Matching Score']})")
-    elif best["Matching Score"] >= 30:
-        st.warning(f"{best['CV']} - Medium Match ({best['Matching Score']})")
-    else:
-        st.error(f"{best['CV']} - Weak Match ({best['Matching Score']})")
-
-    # -------------------------
-    # WHY SELECTED 🔍
-    # -------------------------
     st.write("### 🔍 Why selected?")
-
     st.write(f"""
-    - Matched Skills: {best['Matched Skills']}
+    - Skills: {best['Skills']}
     - Experience: {best['Experience (months)']} months
     - Education: {best['Education']}
     - Languages: {best['Languages']}
     """)
-
-    # -------------------------
-    # LANGUAGES DETAILS 🔥
-    # -------------------------
-    st.subheader("🌍 Languages Details")
-
-    text_best = extract_text_from_pdf(uploaded_files[0])
-    clean_best = preprocess_text(text_best)
-    best_languages = extract_languages(clean_best)
-
-    for lang in best_languages:
-        st.write(f"{lang['language']} - {lang['level']} ({lang['score']} pts)")
 
 else:
     st.info("⬆️ Upload CVs to start analysis")
