@@ -47,12 +47,17 @@ def extract_languages(text):
         matches = re.findall(pattern, text)
 
         for match in matches:
-            level = match[1]
+    level = match[1].lower()
 
-            if level in level_mapping:
-                level = level_mapping[level]
-            else:
-                level = "B1"
+    # ⭐ PRIORITY (maternel)
+    if "maternel" in match[0].lower() or "native" in match[0].lower():
+        level = "C2"
+
+    elif level in level_mapping:
+        level = level_mapping[level]
+
+    else:
+        level = "Unknown"
 
             languages.append({
                 "name": lang,
