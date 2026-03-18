@@ -85,20 +85,10 @@ if uploaded_files:
         # 2. Extract features
         experience_months = extract_experience_months(clean_text)
         education = extract_education(clean_text)
-
         skills = extract_skills(clean_text)
-        if not isinstance(skills, list):
-            skills = []
-
         languages = extract_languages(clean_text)
-        if not isinstance(languages, list):
-            languages = []
-
         sector = extract_sector(clean_text)
-
         companies = extract_companies(clean_text)
-        if not isinstance(companies, list):
-            companies = []
 
         # 3. Global score
         data = {
@@ -146,7 +136,7 @@ if uploaded_files:
         elif experience_months >= job_experience / 2:
             matching_score += 10
 
-        # LANGUAGE
+        # LANGUAGE (🔥 updated)
         language_levels = {
             "A1": 1, "A2": 2,
             "B1": 3, "B2": 4,
@@ -156,10 +146,9 @@ if uploaded_files:
         candidate_lang_level = 0
 
         for lang in languages:
-            if isinstance(lang, str):
-                lvl = language_levels.get(lang.upper(), 0)
-                if lvl > candidate_lang_level:
-                    candidate_lang_level = lvl
+            lvl = language_levels.get(str(lang["level"]).upper(), 0)
+            if lvl > candidate_lang_level:
+                candidate_lang_level = lvl
 
         required_lang_level = language_levels.get(job_language, 0)
 
@@ -179,7 +168,7 @@ if uploaded_files:
             status = "🔴 Weak"
 
         # -------------------------
-        # SAVE RESULT
+        # SAVE RESULT (🔥 updated)
         # -------------------------
         results.append({
             "CV": file.name,
@@ -190,8 +179,7 @@ if uploaded_files:
             "Experience (months)": experience_months,
             "Skills": len(skills),
             "Matched Skills": ", ".join(matched_skills) if matched_skills else "None",
-            "Languages": ", ".join(languages) if languages else "None",
-    
+            "Languages": ", ".join([f"{l['language']}({l['level']})" for l in languages]) if languages else "None",
             "Companies": len(companies),
             "Sector": sector
         })
@@ -258,6 +246,18 @@ if uploaded_files:
     - Education: {best['Education']}
     - Languages: {best['Languages']}
     """)
+
+    # -------------------------
+    # LANGUAGES DETAILS 🔥
+    # -------------------------
+    st.subheader("🌍 Languages Details")
+
+    text_best = extract_text_from_pdf(uploaded_files[0])
+    clean_best = preprocess_text(text_best)
+    best_languages = extract_languages(clean_best)
+
+    for lang in best_languages:
+        st.write(f"{lang['language']} - {lang['level']} ({lang['score']} pts)")
 
 else:
     st.info("⬆️ Upload CVs to start analysis")
