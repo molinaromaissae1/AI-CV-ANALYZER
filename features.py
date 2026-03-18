@@ -1,5 +1,5 @@
 import re
-
+from languages import extract_languages
 # ==========================
 # EDUCATION LEVEL
 # ==========================
@@ -162,3 +162,27 @@ def extract_sector(text):
         return "Data"
     
     return "General"
+    def extract_features(text):
+
+    education = extract_education(text)
+
+    # إلا عندك functions أخرى
+    try:
+        experience = extract_experience(text)
+    except:
+        experience = 0
+
+    try:
+        skills = extract_skills(text)
+    except:
+        skills = []
+
+    # 🔥 الجديد
+    languages = extract_languages(text)
+
+    return {
+        "Education": education,
+        "Experience": experience,
+        "Skills": skills,
+        "Languages_Details": languages
+    }
