@@ -85,10 +85,20 @@ if uploaded_files:
         # 2. Extract features
         experience_months = extract_experience_months(clean_text)
         education = extract_education(clean_text)
-        skills = extract_skills(clean_text) or []
-        languages = extract_languages(clean_text) or []
-        sector = extract_sector(clean_text)
-        companies = extract_companies(clean_text) or []
+
+        skills = extract_skills(clean_text)
+        if not isinstance(skills, list):
+            skills = []
+
+       languages = extract_languages(clean_text)
+       if not isinstance(languages, list):
+           languages = []
+
+       sector = extract_sector(clean_text)
+
+       companies = extract_companies(clean_text)
+       if not isinstance(companies, list):
+          companies = []
 
         # 3. Global score
         data = {
