@@ -190,7 +190,7 @@ if uploaded_files:
             "Experience (months)": experience_months,
             "Skills": len(skills),
             "Matched Skills": ", ".join(matched_skills) if matched_skills else "None",
-            "Languages": ", ".join(languages) if languages
+            "Languages": ", ".join(languages) if languages else "None",
     
             "Companies": len(companies),
             "Sector": sector
