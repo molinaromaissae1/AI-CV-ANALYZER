@@ -36,7 +36,6 @@ st.write("Upload CVs and match them with a job (fiche de poste)")
 # -------------------------
 st.sidebar.title("🎯 Fiche de poste")
 
-# ✅ TEXT AREA (upgrade)
 job_skills = st.sidebar.text_area(
     "Required Skills",
     "recruitment, communication, HR"
@@ -106,14 +105,14 @@ if uploaded_files:
         # -------------------------
         matching_score = 0
 
-        # ✅ SKILLS SMART
+        # SKILLS
         matched_skills = set(skills).intersection(job_skills_list)
         matching_score += len(matched_skills) * 5
 
         if len(matched_skills) >= len(job_skills_list) / 2:
             matching_score += 10
 
-        # ✅ EDUCATION SMART
+        # EDUCATION
         education_levels = {
             "Bac": 1,
             "Bac+1": 2,
@@ -131,13 +130,13 @@ if uploaded_files:
         elif candidate_level == required_level - 1:
             matching_score += 10
 
-        # ✅ EXPERIENCE SMART
+        # EXPERIENCE
         if experience_months >= job_experience:
             matching_score += 20
         elif experience_months >= job_experience / 2:
             matching_score += 10
 
-        # ✅ LANGUAGE SMART
+        # LANGUAGE
         language_levels = {
             "A1": 1, "A2": 2,
             "B1": 3, "B2": 4,
@@ -206,6 +205,24 @@ if uploaded_files:
     st.dataframe(styled_df, use_container_width=True)
 
     # -------------------------
+    # GRAPH 📈
+    # -------------------------
+    st.subheader("📈 Matching Score Chart")
+    st.bar_chart(df.set_index("CV")["Matching Score"])
+
+    # -------------------------
+    # DOWNLOAD CSV 📥
+    # -------------------------
+    csv = df.to_csv(index=False).encode('utf-8')
+
+    st.download_button(
+        "📥 Download Results (CSV)",
+        csv,
+        "candidates.csv",
+        "text/csv"
+    )
+
+    # -------------------------
     # BEST CANDIDATE
     # -------------------------
     best = df.iloc[0]
@@ -218,6 +235,18 @@ if uploaded_files:
         st.warning(f"{best['CV']} - Medium Match ({best['Matching Score']})")
     else:
         st.error(f"{best['CV']} - Weak Match ({best['Matching Score']})")
+
+    # -------------------------
+    # WHY SELECTED 🔍
+    # -------------------------
+    st.write("### 🔍 Why selected?")
+
+    st.write(f"""
+    - Matched Skills: {best['Matched Skills']}
+    - Experience: {best['Experience (months)']} months
+    - Education: {best['Education']}
+    - Languages: {best['Languages']}
+    """)
 
 else:
     st.info("⬆️ Upload CVs to start analysis")
