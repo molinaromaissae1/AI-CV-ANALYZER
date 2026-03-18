@@ -17,6 +17,7 @@ from features import (
 from education_experience import extract_education, extract_experience_months
 from ats_scoring import calculate_global_score
 
+
 # -------------------------
 # CONFIG
 # -------------------------
@@ -29,12 +30,14 @@ st.set_page_config(
 st.title("🤖 AI CV Analyzer for HR")
 st.write("Upload CVs and match them with a job (fiche de poste)")
 
+
 # -------------------------
-# FICHE DE POSTE (SIDEBAR)
+# FICHE DE POSTE
 # -------------------------
 st.sidebar.title("🎯 Fiche de poste")
 
-job_skills = st.sidebar.text_input(
+# ✅ TEXT AREA (upgrade)
+job_skills = st.sidebar.text_area(
     "Required Skills",
     "recruitment, communication, HR"
 )
@@ -54,6 +57,7 @@ job_language = st.sidebar.selectbox(
     ["A1", "A2", "B1", "B2", "C1", "C2"]
 )
 
+
 # -------------------------
 # UPLOAD
 # -------------------------
@@ -62,6 +66,7 @@ uploaded_files = st.file_uploader(
     type=["pdf"],
     accept_multiple_files=True
 )
+
 
 # -------------------------
 # PROCESS
@@ -101,10 +106,14 @@ if uploaded_files:
         # -------------------------
         matching_score = 0
 
-        # SKILLS
-        matching_score += len(set(skills).intersection(job_skills_list)) * 5
+        # ✅ SKILLS SMART
+        matched_skills = set(skills).intersection(job_skills_list)
+        matching_score += len(matched_skills) * 5
 
-        # EDUCATION SMART
+        if len(matched_skills) >= len(job_skills_list) / 2:
+            matching_score += 10
+
+        # ✅ EDUCATION SMART
         education_levels = {
             "Bac": 1,
             "Bac+1": 2,
@@ -122,13 +131,13 @@ if uploaded_files:
         elif candidate_level == required_level - 1:
             matching_score += 10
 
-        # EXPERIENCE SMART
+        # ✅ EXPERIENCE SMART
         if experience_months >= job_experience:
             matching_score += 20
         elif experience_months >= job_experience / 2:
             matching_score += 10
 
-        # LANGUAGE SMART
+        # ✅ LANGUAGE SMART
         language_levels = {
             "A1": 1, "A2": 2,
             "B1": 3, "B2": 4,
@@ -138,9 +147,10 @@ if uploaded_files:
         candidate_lang_level = 0
 
         for lang in languages:
-            lvl = language_levels.get(lang.upper(), 0)
-            if lvl > candidate_lang_level:
-                candidate_lang_level = lvl
+            if isinstance(lang, str):
+                lvl = language_levels.get(lang.upper(), 0)
+                if lvl > candidate_lang_level:
+                    candidate_lang_level = lvl
 
         required_lang_level = language_levels.get(job_language, 0)
 
@@ -170,6 +180,7 @@ if uploaded_files:
             "Education": education,
             "Experience (months)": experience_months,
             "Skills": len(skills),
+            "Matched Skills": len(matched_skills),
             "Languages": len(languages),
             "Companies": len(companies),
             "Sector": sector
