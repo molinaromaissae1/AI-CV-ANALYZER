@@ -13,50 +13,38 @@ def extract_skills(text):
 import re
 from typing import List, Dict, Any
 
+import re
+
 def extract_languages(text):
-    lines = text.lower().split("\n")
+    text = text.lower()
     results = []
 
-    for line in lines:
-        # Arabic
-        if "arabe" in line or "arabic" in line:
-            if "maternelle" in line:
-                level = "C2"
-            elif "c1" in line:
-                level = "C1"
-            elif "a2" in line:
-                level = "A2"
-            else:
-                level = "Unknown"
-            results.append({"name": "Arabic", "level": level})
+    # pattern بحال: Français (C1)
+    pattern = r"(arabic|arabe|french|français|english|anglais|spanish|espagnole)\s*\((.*?)\)"
 
-        # French
-        if "français" in line or "french" in line:
-            if "c1" in line:
-                level = "C1"
-            elif "c2" in line:
-                level = "C2"
-            else:
-                level = "Unknown"
-            results.append({"name": "French", "level": level})
+    matches = re.findall(pattern, text)
 
-        # English
-        if "anglais" in line or "english" in line:
-            if "c1" in line:
-                level = "C1"
-            elif "c2" in line:
-                level = "C2"
-            else:
-                level = "Unknown"
-            results.append({"name": "English", "level": level})
+    for lang, level in matches:
+        level = level.upper()
 
-        # Spanish
-        if "espagnole" in line or "spanish" in line:
-            if "a2" in line:
-                level = "A2"
-            else:
-                level = "Unknown"
-            results.append({"name": "Spanish", "level": level})
+        if "arab" in lang:
+            name = "Arabic"
+            if "maternelle" in level:
+                level = "C2"
+
+        elif "franç" in lang or "french" in lang:
+            name = "French"
+
+        elif "angl" in lang or "english" in lang:
+            name = "English"
+
+        elif "espagn" in lang or "spanish" in lang:
+            name = "Spanish"
+
+        else:
+            continue
+
+        results.append({"name": name, "level": level})
 
     return results
    
