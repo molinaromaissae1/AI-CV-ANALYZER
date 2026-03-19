@@ -27,20 +27,13 @@ def extract_languages(text):
     text = text.lower()
 
     languages_list = {
-        "english": ["english", "anglais"],
-        "french": ["french", "français"],
-        "arabic": ["arabic", "arabe"],
-        "spanish": ["spanish", "espagnol", "espagnole"]
+        "English": ["english", "anglais"],
+        "French": ["french", "français"],
+        "Arabic": ["arabic", "arabe"],
+        "Spanish": ["spanish", "espagnol", "espagnole"]
     }
 
-    level_mapping = {
-        "a1": "A1", "a2": "A2",
-        "b1": "B1", "b2": "B2",
-        "c1": "C1", "c2": "C2",
-        "intermediate": "B1",
-        "fluent": "C1",
-        "courant": "C1"
-    }
+    levels = ["a1", "a2", "b1", "b2", "c1", "c2"]
 
     results = []
 
@@ -50,23 +43,28 @@ def extract_languages(text):
 
                 level = "Unknown"
 
-                # 🔍 نبحث على المستوى قريب من الكلمة
-                for lvl in level_mapping:
-                    if word + " " + lvl in text or lvl + " " + word in text:
-                        level = level_mapping[lvl]
+                # 🧠 ناخدو window صغير حول الكلمة
+                index = text.find(word)
+                context = text[max(0, index-30): index+30]
 
-                # 🔥 maternel
-                if "maternel" in text or "native" in text:
-                    if word in text:
-                        level = "C2"
+                # 🔍 check levels
+                for lvl in levels:
+                    if lvl in context:
+                        level = lvl.upper()
+
+                # 🔥 maternel غير لهد اللغة
+                if "maternel" in context or "native" in context:
+                    level = "C2"
 
                 results.append({
-                    "name": lang.capitalize(),
+                    "name": lang,
                     "level": level
                 })
+
                 break
 
     return results
+
    
 
           
