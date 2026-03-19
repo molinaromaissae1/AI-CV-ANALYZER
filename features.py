@@ -17,40 +17,43 @@ import re
 
 def extract_languages(text):
     text = text.lower()
+
     results = []
 
-    # pattern بحال: Français (C1)
-    pattern = r"(arabic|arabe|french|français|english|anglais|spanish|espagnole)\s*\((.*?)\)"
-
-    matches = re.findall(pattern, text)
-
-    for lang, level in matches:
-        level = level.upper()
-
-        if "arab" in lang:
-            name = "Arabic"
-            if "maternelle" in level:
-                level = "C2"
-
-        elif "franç" in lang or "french" in lang:
-            name = "French"
-
-        elif "angl" in lang or "english" in lang:
-            name = "English"
-
-        elif "espagn" in lang or "spanish" in lang:
-            name = "Spanish"
-
+    # Arabic
+    if "arabe" in text or "arabic" in text:
+        if "maternelle" in text:
+            level = "C2"
         else:
-            continue
+            level = "Unknown"
+        results.append({"name": "Arabic", "level": level})
 
-        results.append({"name": name, "level": level})
+    # French
+    if "français" in text or "french" in text:
+        if "c1" in text:
+            level = "C1"
+        else:
+            level = "Unknown"
+        results.append({"name": "French", "level": level})
+
+    # English
+    if "anglais" in text or "english" in text:
+        if "c1" in text:
+            level = "C1"
+        else:
+            level = "Unknown"
+        results.append({"name": "English", "level": level})
+
+    # Spanish
+    if "espagnole" in text or "spanish" in text:
+        if "a2" in text:
+            level = "A2"
+        else:
+            level = "Unknown"
+        results.append({"name": "Spanish", "level": level})
 
     return results
    
-        
-    
-
 
 def extract_companies(text):
     companies = ["safran", "airbus", "deloitte"]
