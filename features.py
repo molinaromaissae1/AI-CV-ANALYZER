@@ -14,37 +14,49 @@ import re
 from typing import List, Dict, Any
 
 def extract_languages(text):
-    text = text.lower()
-
+    lines = text.lower().split("\n")
     results = []
 
-    # Arabic
-    if "arabe" in text or "arabic" in text:
-        if "arabe (maternelle)" in text or "arabic native" in text:
-            results.append({"name": "Arabic", "level": "C2"})
-        else:
-            results.append({"name": "Arabic", "level": "Unknown"})
+    for line in lines:
+        # Arabic
+        if "arabe" in line or "arabic" in line:
+            if "maternelle" in line:
+                level = "C2"
+            elif "c1" in line:
+                level = "C1"
+            elif "a2" in line:
+                level = "A2"
+            else:
+                level = "Unknown"
+            results.append({"name": "Arabic", "level": level})
 
-    # French
-    if "français" in text or "french" in text:
-        if "c1" in text:
-            results.append({"name": "French", "level": "C1"})
-        else:
-            results.append({"name": "French", "level": "Unknown"})
+        # French
+        if "français" in line or "french" in line:
+            if "c1" in line:
+                level = "C1"
+            elif "c2" in line:
+                level = "C2"
+            else:
+                level = "Unknown"
+            results.append({"name": "French", "level": level})
 
-    # English
-    if "anglais" in text or "english" in text:
-        if "c1" in text:
-            results.append({"name": "English", "level": "C1"})
-        else:
-            results.append({"name": "English", "level": "Unknown"})
+        # English
+        if "anglais" in line or "english" in line:
+            if "c1" in line:
+                level = "C1"
+            elif "c2" in line:
+                level = "C2"
+            else:
+                level = "Unknown"
+            results.append({"name": "English", "level": level})
 
-    # Spanish
-    if "espagnole" in text or "spanish" in text:
-        if "a2" in text:
-            results.append({"name": "Spanish", "level": "A2"})
-        else:
-            results.append({"name": "Spanish", "level": "Unknown"})
+        # Spanish
+        if "espagnole" in line or "spanish" in line:
+            if "a2" in line:
+                level = "A2"
+            else:
+                level = "Unknown"
+            results.append({"name": "Spanish", "level": level})
 
     return results
    
