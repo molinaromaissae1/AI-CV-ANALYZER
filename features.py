@@ -10,50 +10,82 @@ def extract_skills(text):
     return found
 
 
-def extract_languages(text):
-    text = text.lower()
+import re
+from typing import List, Dict, Any
 
+def extract_languages(text: str) -> List[Dict[str, str]]:
+    text = text.lower().strip()
+    
+    # قائمة اللغات مع الكلمات المفتاحية (موسعة)
     languages = {
-        "English": ["english", "anglais"],
-        "French": ["french", "français"],
-        "Arabic": ["arabic", "arabe"],
-        "Spanish": ["spanish", "espagnol", "espagnole"]
+        "English": ["english", "anglais", "angl", "gb", "uk", "🇬🇧", "🇺🇸"],
+        "French": ["french", "français", "francais", "fr", "🇫🇷"],
+        "Arabic": ["arabic", "arabe", "عربي", "ar", "🇸🇦", "🇲🇦"],
+        "Spanish": ["spanish", "espagnol", "espagnole", "español", "es", "🇪🇸"],
+        "German": ["german", "deutsch", "allemand", "de", "🇩🇪"],
+        "Italian": ["italian", "italien", "italiano", "it", "🇮🇹"],
+        "Dutch": ["dutch", "néerlandais", "nederlands", "nl", "🇳🇱"]
     }
-
+    
+    # مستويات CEFR مع regex للكشف الدقيق
+    cefr_levels = {
+        r'\bc2\b|\bmatern(e|el)|\bnative|\bfluent\b|\bمستوى متقدم جداً?\b': "C2",
+        r'\bc1\b|\badvanced\b|\bمتقدم\b': "C1",
+        r'\bc2?\b|\bupper intermediate\b|\bمتوسط عليا?\b': "B2",
+        r'\bb1\b|\bintermediate\b|\bمتوسط\b': "B1",
+        r'\ba2?\b|\belementary\b|\bbeginner\b|\bمبتدئ\b': "A2",
+        r'\ba1\b|\bbasic\b|\bأساسيات?\b': "A1"
+    }
+    
     results = []
-
-    for lang, keys in languages.items():
-        for word in keys:
-            if word in text:
-
-                level = "Unknown"
-
-                # 🧠 خدي سطر كامل فيه اللغة
-                lines = text.split("\n")
-                for line in lines:
-                    if word in line:
-
-                        if "c2" in line or "maternel" in line:
-                            level = "C2"
-                        elif "c1" in line:
-                            level = "C1"
-                        elif "b2" in line:
-                            level = "B2"
-                        elif "b1" in line:
-                            level = "B1"
-                        elif "a2" in line:
-                            level = "A2"
-                        elif "a1" in line:
-                            level = "A1"
-
-                results.append({
-                    "name": lang,
-                    "level": level
-                })
-
+    
+    # تقسيم النص للكلمات والسطور
+    words = re.findall(r'\b\w+\b', text)
+    lines = text.split('\n')
+    
+    for lang_name, keywords in languages.items():
+        found = False
+        
+        # البحث في الكلمات
+        for keyword in keywords:
+            if keyword.lower() in words:
+                found = True
                 break
-
+        
+        if found:
+            # البحث عن المستوى في السطر اللي فيه اللغة
+            level = "Unknown"
+            
+            for line in lines:
+                line_lower = line.lower()
+                
+                # إذا كان السطر يحتوي على اسم اللغة
+                lang_found = any(keyword in line_lower for keyword in keywords)
+                
+                if lang_found:
+                    # فحص جميع مستويات CEFR
+                    for pattern, lvl in cefr_levels.items():
+                        if re.search(pattern, line_lower):
+                            level = lvl
+                            break
+                    break
+            
+            # إذا ما لقاش مستوى في نفس السطر، نبحث في النص كامل
+            if level == "Unknown":
+                for pattern, lvl in cefr_levels.items():
+                    if re.search(pattern, text):
+                        level = lvl
+                        break
+            
+            results.append({
+                "name": lang_name,
+                "level": level,
+                "confidence": "high" if level != "Unknown" else "low"
+            })
+    
     return results
+   
+        
     
 
 
